@@ -229,6 +229,15 @@ export async function MessageSingleASTNode({ node, context }: { node: SingleASTN
     case 'timestamp':
       return <DiscordTime timestamp={parseInt(node.timestamp) * 1000} format={node.format} />;
 
+    case 'heading': {
+      const HeadingTag = `h${Math.min(Math.max(node.level ?? 1, 1), 6)}` as keyof React.JSX.IntrinsicElements;
+      return (
+        <HeadingTag>
+          <MessageASTNodes nodes={node.content} context={context} />
+        </HeadingTag>
+      );
+    }
+
     default: {
       console.log(`Unknown node type: ${type}`, node);
       return typeof node.content === 'string' ? (
