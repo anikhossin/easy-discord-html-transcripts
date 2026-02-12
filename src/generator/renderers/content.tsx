@@ -238,6 +238,13 @@ export async function MessageSingleASTNode({ node, context }: { node: SingleASTN
       );
     }
 
+    case 'subtext':
+      return (
+        <small>
+          <MessageASTNodes nodes={node.content} context={context} />
+        </small>
+      );
+
     default: {
       console.log(`Unknown node type: ${type}`, node);
       return typeof node.content === 'string' ? (
