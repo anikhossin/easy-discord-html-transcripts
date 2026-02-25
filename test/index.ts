@@ -1,5 +1,5 @@
 import { AttachmentBuilder, Client, GatewayIntentBits, TextChannel } from "discord.js";
-import { createChannelTranscript } from "../utils/createChannelTranscript";
+import { createChannelTranscript } from "../src/utils/createChannelTranscript";
 
 const client = new Client({
   intents: [
