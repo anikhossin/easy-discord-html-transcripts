@@ -1,7 +1,6 @@
 {
   "name": "@easy-system/transcript-builder",
-  "version": "1.0.0",
-  "private": true,
+  "version": "1.0.1",
   "description": "Transcript builder for Easy System",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
