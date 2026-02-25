@@ -88,32 +88,34 @@ export const Message: React.FC<MessageProps> = ({ message, isGroupStart = false,
     hour12: true,
   });
 
-  // Split attachments by type
-  const imageAttachments = message.attachments.filter(isImageAttachment);
-  const videoAttachments = message.attachments.filter(isVideoAttachment);
-  const audioAttachments = message.attachments.filter(isAudioAttachment);
+  // Split attachments by type (filter out those with empty URLs to avoid src="" errors)
+  const hasValidUrl = (att: Attachment) => !!att.url?.trim();
+  const imageAttachments = message.attachments.filter(att => isImageAttachment(att) && hasValidUrl(att));
+  const videoAttachments = message.attachments.filter(att => isVideoAttachment(att) && hasValidUrl(att));
+  const audioAttachments = message.attachments.filter(att => isAudioAttachment(att) && hasValidUrl(att));
   const fileAttachments = message.attachments.filter(
     att => !isImageAttachment(att) && !isVideoAttachment(att) && !isAudioAttachment(att)
   );
 
   const renderImageGrid = (images: Attachment[]) => {
-    if (images.length === 0) return null;
-    const gridClass = images.length === 1 ? 'discord-image-single'
-      : images.length === 2 ? 'discord-image-grid-2'
-      : images.length === 3 ? 'discord-image-grid-3'
+    const validImages = images.filter(img => img.url?.trim());
+    if (validImages.length === 0) return null;
+    const gridClass = validImages.length === 1 ? 'discord-image-single'
+      : validImages.length === 2 ? 'discord-image-grid-2'
+      : validImages.length === 3 ? 'discord-image-grid-3'
       : 'discord-image-grid-4';
 
     return (
       <div className={`discord-image-grid ${gridClass}`}>
-        {images.map((img, i) => (
+        {validImages.map((img, i) => (
           <a key={i} href={img.url} target="_blank" rel="noopener noreferrer" className="discord-image-wrapper">
             <img
               src={img.url}
               alt={img.filename}
               className={`discord-attachment-image${img.spoiler ? ' discord-spoiler-image' : ''}`}
               style={{
-                maxWidth: images.length === 1 ? '550px' : '100%',
-                maxHeight: images.length === 1 ? '350px' : '200px',
+                maxWidth: validImages.length === 1 ? '550px' : '100%',
+                maxHeight: validImages.length === 1 ? '350px' : '200px',
               }}
             />
             {img.spoiler && <div className="discord-spoiler-overlay">SPOILER</div>}
@@ -183,9 +185,9 @@ export const Message: React.FC<MessageProps> = ({ message, isGroupStart = false,
         <div className="discord-reply-container">
           <div className="discord-reply-spine" />
           <div className="discord-reply-content">
-            {message.reference!.author?.avatarURL ? (
+            {message.reference!.author?.avatarURL?.trim() ? (
               <img
-                src={message.reference!.author.avatarURL}
+                src={message.reference!.author!.avatarURL!}
                 alt=""
                 className="discord-reply-avatar"
               />
@@ -214,9 +216,9 @@ export const Message: React.FC<MessageProps> = ({ message, isGroupStart = false,
         <div className="discord-interaction-container">
           <div className="discord-interaction-gutter" />
           <div className="discord-interaction-content">
-            {message.interaction!.user?.avatarURL && (
+            {message.interaction!.user?.avatarURL?.trim() && (
               <img
-                src={message.interaction!.user.avatarURL}
+                src={message.interaction!.user!.avatarURL!}
                 alt=""
                 className="discord-interaction-avatar"
               />
@@ -241,7 +243,7 @@ export const Message: React.FC<MessageProps> = ({ message, isGroupStart = false,
         <div className="discord-message-gutter">
           {isGroupStart ? (
             <div className="discord-avatar-wrapper">
-              {message.author.avatarURL ? (
+              {message.author.avatarURL?.trim() ? (
                 <img
                   src={message.author.avatarURL}
                   alt={message.author.username}

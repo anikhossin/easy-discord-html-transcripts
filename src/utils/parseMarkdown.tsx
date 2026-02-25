@@ -66,31 +66,39 @@ function parseInlineSegment(text: string, userMap?: UserMap): React.ReactNode[] 
     // Custom animated emoji <a:name:id>
     {
       regex: /<a:(\w+):(\d+)>/,
-      render: (m) => (
-        <img
-          key={nextKey('ae')}
-          src={`https://cdn.discordapp.com/emojis/${m[2] ?? ''}.gif?size=48&quality=lossless`}
-          alt={`:${m[1] ?? ''}:`}
-          title={`:${m[1] ?? ''}:`}
-          className="discord-custom-emoji"
-          draggable="false"
-        />
-      ),
+      render: (m) => {
+        const id = m[2] ?? '';
+        if (!id) return <React.Fragment key={nextKey('ae')}>:{m[1] ?? ''}:</React.Fragment>;
+        return (
+          <img
+            key={nextKey('ae')}
+            src={`https://cdn.discordapp.com/emojis/${id}.gif?size=48&quality=lossless`}
+            alt={`:${m[1] ?? ''}:`}
+            title={`:${m[1] ?? ''}:`}
+            className="discord-custom-emoji"
+            draggable="false"
+          />
+        );
+      },
       literal: true,
     },
     // Custom static emoji <:name:id>
     {
       regex: /<:(\w+):(\d+)>/,
-      render: (m) => (
-        <img
-          key={nextKey('ce')}
-          src={`https://cdn.discordapp.com/emojis/${m[2] ?? ''}.webp?size=48&quality=lossless`}
-          alt={`:${m[1] ?? ''}:`}
-          title={`:${m[1] ?? ''}:`}
-          className="discord-custom-emoji"
-          draggable="false"
-        />
-      ),
+      render: (m) => {
+        const id = m[2] ?? '';
+        if (!id) return <React.Fragment key={nextKey('ce')}>:{m[1] ?? ''}:</React.Fragment>;
+        return (
+          <img
+            key={nextKey('ce')}
+            src={`https://cdn.discordapp.com/emojis/${id}.webp?size=48&quality=lossless`}
+            alt={`:${m[1] ?? ''}:`}
+            title={`:${m[1] ?? ''}:`}
+            className="discord-custom-emoji"
+            draggable="false"
+          />
+        );
+      },
       literal: true,
     },
     // Discord timestamp <t:unix:format>

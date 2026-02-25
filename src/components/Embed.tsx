@@ -19,7 +19,7 @@ export const Embed: React.FC<EmbedProps> = ({ embed }) => {
       <div className="discord-embed-color-bar" style={{ backgroundColor: color }} />
       <div className="discord-embed-content">
         {/* Thumbnail (floated right) */}
-        {embed.thumbnail && (
+        {embed.thumbnail?.url && (
           <div className="discord-embed-thumbnail">
             <a href={embed.thumbnail.url} target="_blank" rel="noopener noreferrer">
               <img src={embed.thumbnail.url} alt="Thumbnail" />
@@ -30,7 +30,7 @@ export const Embed: React.FC<EmbedProps> = ({ embed }) => {
         {/* Author */}
         {embed.author && (
           <div className="discord-embed-author">
-            {embed.author.icon_url && (
+            {embed.author.icon_url?.trim() && (
               <img src={embed.author.icon_url} alt="" className="discord-embed-author-icon" />
             )}
             {embed.author.url ? (
@@ -78,7 +78,7 @@ export const Embed: React.FC<EmbedProps> = ({ embed }) => {
         )}
 
         {/* Image */}
-        {embed.image && (
+        {embed.image?.url && (
           <div className="discord-embed-image-container">
             <a href={embed.image.url} target="_blank" rel="noopener noreferrer">
               <img src={embed.image.url} alt="Embed image" className="discord-embed-image" />
@@ -98,7 +98,7 @@ export const Embed: React.FC<EmbedProps> = ({ embed }) => {
         {/* Footer */}
         {(embed.footer || embed.timestamp) && (
           <div className="discord-embed-footer">
-            {embed.footer?.icon_url && (
+            {embed.footer?.icon_url?.trim() && (
               <img src={embed.footer.icon_url} alt="" className="discord-embed-footer-icon" />
             )}
             {embed.footer && (

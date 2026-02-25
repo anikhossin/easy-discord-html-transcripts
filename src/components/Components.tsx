@@ -110,10 +110,12 @@ export const Components: React.FC<ComponentsProps> = ({ components }) => {
   };
 
   const renderThumbnail = (thumbnail: Thumbnail, index: number): React.ReactNode => {
+    const url = thumbnail.media?.url?.trim();
+    if (!url) return null;
     return (
       <div key={index} className={`discord-thumbnail${thumbnail.spoiler ? ' discord-thumbnail-spoiler' : ''}`}>
         <img
-          src={thumbnail.media.url}
+          src={url}
           alt={thumbnail.description || ''}
           className="discord-thumbnail-img"
         />
@@ -175,25 +177,28 @@ export const Components: React.FC<ComponentsProps> = ({ components }) => {
 
       case 12: { // MediaGallery
         const gallery = component as MediaGallery;
-        const itemCount = gallery.items.length;
+        const validItems = gallery.items.filter(item => item.url?.trim());
+        const itemCount = validItems.length;
         const gridClass = itemCount === 1 ? 'discord-media-gallery-1'
           : itemCount === 2 ? 'discord-media-gallery-2'
           : 'discord-media-gallery-multi';
 
+        if (itemCount === 0) return null;
+
         return (
           <div key={index} className={`discord-media-gallery ${gridClass}`}>
-            {gallery.items.map((item, i) => (
-              <div key={i} className={`discord-media-gallery-item${item.spoiler ? ' discord-media-gallery-spoiler' : ''}`}>
-                <a href={item.url} target="_blank" rel="noopener noreferrer">
-                  <img
-                    src={item.url}
-                    alt={item.description || `Media ${i + 1}`}
-                    className="discord-media-gallery-img"
-                  />
-                </a>
-                {item.spoiler && <div className="discord-spoiler-overlay-small">SPOILER</div>}
-              </div>
-            ))}
+            {validItems.map((item, i) => (
+                <div key={i} className={`discord-media-gallery-item${item.spoiler ? ' discord-media-gallery-spoiler' : ''}`}>
+                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={item.url}
+                      alt={item.description || `Media ${i + 1}`}
+                      className="discord-media-gallery-img"
+                    />
+                  </a>
+                  {item.spoiler && <div className="discord-spoiler-overlay-small">SPOILER</div>}
+                </div>
+              ))}
           </div>
         );
       }
