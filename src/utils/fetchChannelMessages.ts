@@ -21,6 +21,7 @@ export async function fetchChannelMessages(
   const channelName = textChannel.name || 'Unknown Channel';
 
   const messages: Message[] = [];
+  const seenMessageIds = new Set<string>();
   let lastMessageId: string | undefined;
   let fetchedCount = 0;
   const batchSize = 100;
@@ -39,10 +40,15 @@ export async function fetchChannelMessages(
     }
 
     const fetchedCollection = fetched as unknown as Collection<string, DiscordMessage>;
-    const fetchedArray = Array.from(fetchedCollection.values()).reverse(); // Reverse to get chronological order
+    // Discord returns newest-first; reverse to process oldest-first within the batch
+    const fetchedArray = Array.from(fetchedCollection.values()).reverse();
     
     for (const msg of fetchedArray) {
-      // Skip bot messages if needed, or include all
+      if (seenMessageIds.has(msg.id)) {
+        continue;
+      }
+      seenMessageIds.add(msg.id);
+
       messages.push(await convertDiscordMessage(msg));
       fetchedCount++;
       
@@ -55,9 +61,10 @@ export async function fetchChannelMessages(
       break;
     }
 
-    const lastMsg = fetchedArray[fetchedArray.length - 1];
-    if (lastMsg) {
-      lastMessageId = lastMsg.id;
+    // Paginate using the oldest message in this batch (first after reverse)
+    const oldestMsg = fetchedArray[0];
+    if (oldestMsg) {
+      lastMessageId = oldestMsg.id;
     }
     
     if (fetchedCollection.size < batchSize) {
